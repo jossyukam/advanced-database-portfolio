@@ -1,0 +1,10 @@
+      t      | count  
+-------------+--------
+ products    |   5000
+ customers   |  20000
+ deliveries  | 133558
+ orders      | 200000
+ payments    | 200000
+ order_items | 400001
+(6 rows)
+

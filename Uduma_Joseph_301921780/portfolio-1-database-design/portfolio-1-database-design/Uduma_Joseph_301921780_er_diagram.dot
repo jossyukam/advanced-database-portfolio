@@ -1,0 +1,49 @@
+digraph ER {
+  rankdir=LR; node [shape=plaintext, fontname="Helvetica", fontsize=10]; edge [fontname="Helvetica", fontsize=9];
+
+  customers [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>customers</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> customer_id</TD></TR><TR><TD ALIGN="LEFT">full_name</TD></TR>
+    <TR><TD ALIGN="LEFT">email (UQ)</TD></TR><TR><TD ALIGN="LEFT">phone</TD></TR></TABLE>>];
+  addresses [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>addresses</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> address_id</TD></TR><TR><TD ALIGN="LEFT"><I>FK</I> customer_id</TD></TR>
+    <TR><TD ALIGN="LEFT">street, city, state</TD></TR></TABLE>>];
+  categories [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>categories</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> category_id</TD></TR><TR><TD ALIGN="LEFT">name (UQ)</TD></TR></TABLE>>];
+  products [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>products</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> product_id</TD></TR><TR><TD ALIGN="LEFT"><I>FK</I> category_id</TD></TR>
+    <TR><TD ALIGN="LEFT">name, price, stock_qty</TD></TR></TABLE>>];
+  orders [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>orders</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> order_id</TD></TR><TR><TD ALIGN="LEFT"><I>FK</I> customer_id</TD></TR>
+    <TR><TD ALIGN="LEFT"><I>FK</I> address_id</TD></TR><TR><TD ALIGN="LEFT">status, order_date</TD></TR></TABLE>>];
+  order_items [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>order_items</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK,FK</B> order_id</TD></TR><TR><TD ALIGN="LEFT"><B>PK,FK</B> product_id</TD></TR>
+    <TR><TD ALIGN="LEFT">quantity, unit_price</TD></TR></TABLE>>];
+  payments [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>payments</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> payment_id</TD></TR><TR><TD ALIGN="LEFT"><I>FK</I> order_id</TD></TR>
+    <TR><TD ALIGN="LEFT">amount, method, status</TD></TR></TABLE>>];
+  deliveries [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>deliveries</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> delivery_id</TD></TR><TR><TD ALIGN="LEFT"><I>FK</I> order_id (UQ)</TD></TR>
+    <TR><TD ALIGN="LEFT">courier, status</TD></TR></TABLE>>];
+  stock_log [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#EAF2FB">
+    <TR><TD BGCOLOR="#0B3558"><FONT COLOR="white"><B>stock_log</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> log_id</TD></TR><TR><TD ALIGN="LEFT"><I>FK</I> product_id</TD></TR>
+    <TR><TD ALIGN="LEFT">change_qty, reason</TD></TR></TABLE>>];
+
+  customers -> addresses   [label="1 : N"];
+  customers -> orders      [label="1 : N"];
+  addresses -> orders      [label="1 : N"];
+  categories -> products   [label="1 : N"];
+  orders -> order_items    [label="1 : N"];
+  products -> order_items  [label="1 : N"];
+  orders -> payments       [label="1 : N"];
+  orders -> deliveries     [label="1 : 0..1"];
+  products -> stock_log    [label="1 : N"];
+}
