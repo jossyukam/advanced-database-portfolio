@@ -1,0 +1,37 @@
+psql:Uduma_Joseph_301921780_partition_demo.sql:4: NOTICE:  table "orders_sharded" does not exist, skipping
+--- rows per shard ---
+     shard      | count 
+----------------+-------
+ orders_shard_0 | 49998
+ orders_shard_1 | 50554
+ orders_shard_2 | 50072
+ orders_shard_3 | 49377
+(4 rows)
+
+--- query with the shard key: only ONE shard is read (partition pruning) ---
+                                       QUERY PLAN                                       
+----------------------------------------------------------------------------------------
+ Bitmap Heap Scan on orders_shard_2 orders_sharded  (cost=4.37..39.55 rows=10 width=28)
+   Recheck Cond: (customer_id = 1234)
+   ->  Bitmap Index Scan on orders_shard_2_pkey  (cost=0.00..4.37 rows=10 width=0)
+         Index Cond: (customer_id = 1234)
+(4 rows)
+
+--- query without the shard key: ALL shards are read (scatter-gather) ---
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=3995.74..3995.75 rows=1 width=8)
+   ->  Gather  (cost=3995.53..3995.74 rows=2 width=8)
+         Workers Planned: 2
+         ->  Partial Aggregate  (cost=2995.53..2995.54 rows=1 width=8)
+               ->  Parallel Append  (cost=0.00..2978.22 rows=6924 width=0)
+                     ->  Parallel Seq Scan on orders_shard_1 orders_sharded_2  (cost=0.00..743.72 rows=2487 width=0)
+                           Filter: ((status)::text = 'PENDING'::text)
+                     ->  Parallel Seq Scan on orders_shard_2 orders_sharded_3  (cost=0.00..737.18 rows=2429 width=0)
+                           Filter: ((status)::text = 'PENDING'::text)
+                     ->  Parallel Seq Scan on orders_shard_0 orders_sharded_1  (cost=0.00..735.63 rows=2471 width=0)
+                           Filter: ((status)::text = 'PENDING'::text)
+                     ->  Parallel Seq Scan on orders_shard_3 orders_sharded_4  (cost=0.00..727.07 rows=2388 width=0)
+                           Filter: ((status)::text = 'PENDING'::text)
+(13 rows)
+

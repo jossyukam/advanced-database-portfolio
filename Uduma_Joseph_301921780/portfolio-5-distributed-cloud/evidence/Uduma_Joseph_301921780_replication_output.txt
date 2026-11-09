@@ -1,0 +1,17 @@
+## 1. Replication status (on primary)
+ streaming | async      | 00:00:00.000599
+
+## 2. Write on primary: new product 9500
+## 3. Read on standby (should see product 9500)
+       9500 | Replication Demo |        10
+
+## 4. Write on standby (should be refused: standby is read-only)
+ERROR:  cannot execute UPDATE in a read-only transaction
+## 5. Failover: promote standby, then write to it
+ f
+
+       9500 |         7
+
+## 6. Divergence: the old primary does NOT see the write made on the promoted node
+       9500 |        10
+
