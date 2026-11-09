@@ -1,0 +1,22 @@
+FLUSHDB
+# --- Shopping cart as a Redis hash (key = cart:<customer_id>, field = product_id, value = qty) ---
+HSET cart:1234 prod:777 2 prod:42 1
+HINCRBY cart:1234 prod:777 1
+HGETALL cart:1234
+# Carts are temporary: expire after 7 days of inactivity
+EXPIRE cart:1234 604800
+TTL cart:1234
+# --- Session token with 30 minute expiry (plain key-value) ---
+SET session:abc123 customer:1234 EX 1800
+GET session:abc123
+# --- Best-sellers leaderboard as a sorted set (score = units sold) ---
+ZINCRBY bestsellers 3 prod:777
+ZINCRBY bestsellers 1 prod:42
+ZINCRBY bestsellers 7 prod:900
+ZINCRBY bestsellers 5 prod:777
+ZREVRANGE bestsellers 0 2 WITHSCORES
+ZREVRANK bestsellers prod:42
+# --- Atomic stock decrement (no lost update): DECR is a single atomic command ---
+SET stock:prod:9100 1
+DECR stock:prod:9100
+DECR stock:prod:9100

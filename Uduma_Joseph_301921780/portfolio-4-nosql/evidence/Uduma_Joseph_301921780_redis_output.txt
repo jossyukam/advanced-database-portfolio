@@ -1,0 +1,59 @@
+> FLUSHDB
+OK
+
+# --- Shopping cart as a Redis hash (key = cart:<customer_id>, field = product_id, value = qty) ---
+> HSET cart:1234 prod:777 2 prod:42 1
+2
+> HINCRBY cart:1234 prod:777 1
+3
+> HGETALL cart:1234
+prod:777
+3
+prod:42
+1
+
+# Carts are temporary: expire after 7 days of inactivity
+> EXPIRE cart:1234 604800
+1
+> TTL cart:1234
+604800
+
+# --- Session token with 30 minute expiry (plain key-value) ---
+> SET session:abc123 customer:1234 EX 1800
+OK
+> GET session:abc123
+customer:1234
+
+# --- Best-sellers leaderboard as a sorted set (score = units sold) ---
+> ZINCRBY bestsellers 3 prod:777
+3
+> ZINCRBY bestsellers 1 prod:42
+1
+> ZINCRBY bestsellers 7 prod:900
+7
+> ZINCRBY bestsellers 5 prod:777
+8
+> ZREVRANGE bestsellers 0 2 WITHSCORES
+prod:777
+8
+prod:900
+7
+prod:42
+1
+> ZREVRANK bestsellers prod:42
+2
+
+# --- Atomic stock decrement (no lost update): DECR is a single atomic command ---
+> SET stock:prod:9100 1
+OK
+> DECR stock:prod:9100
+0
+> DECR stock:prod:9100
+-1
+
+# --- Guarded decrement via Lua (Uduma_Joseph_301921780_guarded_decrement.lua): stock starts at 1, three buyers ---
+OK
+buyer 1 -> 0
+buyer 2 -> -1
+buyer 3 -> -1
+final stock: 0
