@@ -1,0 +1,22 @@
+=============== Uduma_Joseph_301921780_reader_READ_COMMITTED.sql ===============
+ reader first read 
+-------------------
+         100000.00
+(1 row)
+
+ reader second read (READ COMMITTED) 
+-------------------------------------
+                           120000.00
+(1 row)
+
+=============== Uduma_Joseph_301921780_reader_REPEATABLE_READ.sql ===============
+ reader first read 
+-------------------
+         100000.00
+(1 row)
+
+ reader second read (REPEATABLE READ) 
+--------------------------------------
+                            100000.00
+(1 row)
+

@@ -1,0 +1,50 @@
+=============== MODE: unsafe (stock = 1 unit, two buyers at once) ===============
+[A] sees stock = 1
+[B] sees stock = 1
+ pg_sleep 
+----------
+ 
+(1 row)
+
+[A] sale recorded
+ pg_sleep 
+----------
+ 
+(1 row)
+
+[B] sale recorded
+ stock_qty 
+-----------
+         0
+(1 row)
+
+ sales_recorded 
+----------------
+              2
+(1 row)
+
+=============== MODE: safe (stock = 1 unit, two buyers at once) ===============
+[A] sees stock = 1
+ pg_sleep 
+----------
+ 
+(1 row)
+
+[A] sale recorded
+[B] sees stock = 0
+ pg_sleep 
+----------
+ 
+(1 row)
+
+[B] out of stock, sale refused
+ stock_qty 
+-----------
+         0
+(1 row)
+
+ sales_recorded 
+----------------
+              1
+(1 row)
+
