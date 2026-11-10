@@ -1,4 +1,3 @@
-```markdown
 # Advanced Database Systems Portfolio (MIT 8103)
 
 **Student:** Joseph Uduma, 301921780
